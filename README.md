@@ -7,8 +7,8 @@ using them does not require the native engine implementation.
 
 This guide explains how to build, package and install your own importer. Built-in
 VXB and JSON importers restore editable documents. G-code parsing remains available
-for sliced-job inspection and preview. See [file I/O](../../docs/file-io.md) for implementation boundaries
-and the [export API guide](../export/README.md) for the corresponding export workflow.
+for sliced-job inspection and preview. See [file I/O](https://github.com/Voxel-Brew/VoxelBrew/blob/master/docs/file-io.md) for implementation boundaries
+and the [export API guide](https://github.com/Voxel-Brew/api-export/blob/master/README.md) for the corresponding export workflow.
 
 ## Build an external plugin
 
@@ -33,11 +33,12 @@ dependencies {
 Publish local API artifacts from the VoxelBrew repository root:
 
 ```text
-./gradlew :api:model:publishToMavenLocal :api:import:publishToMavenLocal
+./gradlew -p ../model publishToMavenLocal
+./gradlew publishToMavenLocal -PuseMavenLocal=true
 ```
 
 Then build your separate project with
-`./gradlew jar -PvoxelbrewVersion=<matching-host-version>`. Use `gradlew.bat` on
+`./gradlew jar -PvoxelbrewVersion=<api-version>`. Use `gradlew.bat` on
 Windows. The host supplies `import-api` and its transitive `model-api` dependency
 at runtime: do not bundle copies of either in your plugin JAR. Public importer
 contracts must not expose JavaFX, picocli, generated Protobuf classes or native
@@ -242,7 +243,7 @@ Keep frontend classes out of your public dialog contract.
 ## First-party providers and migration
 
 First-party implementations belong in `impl/importer`, under `dev.voxelbrew.importer`.
-Include the provider in the [`ImporterRegistry(Path)`](../../impl/importer/src/main/java/dev/voxelbrew/importer/ImporterRegistry.java) constructor.
+Include the provider in the [`ImporterRegistry(Path)`](https://github.com/Voxel-Brew/VoxelBrew/blob/master/importer/src/main/java/dev/voxelbrew/importer/ImporterRegistry.java) constructor.
 The runtime supplies this registry to the frontend Dagger composition roots.
 The GUI discovers formats through that registry; no separate GUI format list is needed.
 Keep DI annotations out of public API contracts.
@@ -264,15 +265,15 @@ Use real engine evaluation when verifying geometry rather than only checking fea
 From the repository root, the existing API-only consumer fixture and importer tests run with:
 
 ```text
-./gradlew :engine:buildExporterFixture :api:import:test :impl:importer:test
-./gradlew :impl:importer:integrationTest
+./gradlew -p ../../VoxelBrew :engine:buildExporterFixture :importer:test
+./gradlew -p ../../VoxelBrew :importer:integrationTest
 ```
 
-The integration suite requires the native prerequisites in the [root README](../../README.md).
+The integration suite requires the native prerequisites in the [root README](https://github.com/Voxel-Brew/VoxelBrew/blob/master/README.md).
 Use `gradlew.bat` on Windows. See the working
-[`ProbeImporter`](../../fixtures/exporter-plugin/src/main/java/consumer/ProbeImporter.java),
-its [independent build](../../fixtures/exporter-plugin/build.gradle.kts), and the
-[import validation record](../../docs/acceptance/importers.md). These focused checks
+[`ProbeImporter`](https://github.com/Voxel-Brew/VoxelBrew/blob/master/fixtures/exporter-plugin/src/main/java/consumer/ProbeImporter.java),
+its [independent build](https://github.com/Voxel-Brew/VoxelBrew/blob/master/fixtures/exporter-plugin/build.gradle.kts), and the
+[import validation record](https://github.com/Voxel-Brew/VoxelBrew/blob/master/docs/acceptance/importers.md). These focused checks
 are not full GUI E2E, installer or platform acceptance.
 
 ## Standalone build and publication
