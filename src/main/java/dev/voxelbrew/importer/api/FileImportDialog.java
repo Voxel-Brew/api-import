@@ -2,6 +2,7 @@ package dev.voxelbrew.importer.api;
 
 import java.nio.file.Path;
 import java.util.*;
+import lombok.NonNull;
 
 /** Standard local source request. No filesystem access occurs in this API. */
 @lombok.Getter
@@ -11,8 +12,8 @@ public final class FileImportDialog extends ImportDialog<FileImportDialog.Source
     private final List<String> extensions;
     private final List<ImportOption> options;
 
-    public FileImportDialog(String title, List<String> extensions, List<ImportOption> options) {
-        this.title = Objects.requireNonNull(title);
+    public FileImportDialog(@NonNull String title, List<String> extensions, List<ImportOption> options) {
+        this.title = title;
         this.extensions = List.copyOf(extensions);
         this.options = List.copyOf(options);
         if (extensions.isEmpty() || extensions.stream().anyMatch(e -> !e.matches("[a-zA-Z0-9]+")))
@@ -46,9 +47,8 @@ public final class FileImportDialog extends ImportDialog<FileImportDialog.Source
         return source(path, Map.of());
     }
 
-    public static ImportWindow source(Path path, Map<String, String> options) {
+    public static ImportWindow source(@NonNull Path path, Map<String, String> options) {
         var values = Map.copyOf(options);
-        Objects.requireNonNull(path);
         return new ImportDialogs()
                 .register(FileImportDialog.class, request -> Optional.of(request.settings(path, values)));
     }
