@@ -1,8 +1,8 @@
 package dev.voxelbrew.api.importer;
 
-import dev.voxelbrew.api.importer.component.FileSource;
-import dev.voxelbrew.api.importer.component.ImportDialogLayout;
-import dev.voxelbrew.api.importer.component.VerticalLayout;
+import dev.voxelbrew.api.vui.FileSource;
+import dev.voxelbrew.api.vui.Layout;
+import dev.voxelbrew.api.vui.VerticalLayout;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -31,7 +31,7 @@ public final class FileImportDialog implements ImportDialog<FileImportDialog.Sou
     }
 
     @Override
-    public ImportDialogLayout layout() {
+    public Layout layout() {
         return new VerticalLayout(sourceInput);
     }
 

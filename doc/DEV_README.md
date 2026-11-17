@@ -6,7 +6,7 @@ rectangle sketch and extrusion. A custom dialog adds an optional scale setting.
 The same API can read other local formats or fetch a document from a service.
 
 The public types are in `dev.voxelbrew.api.importer` and
-`dev.voxelbrew.api.importer.component`. They do not depend on JavaFX, the CLI, or
+`dev.voxelbrew.api.vui`. They do not depend on JavaFX, the CLI, or
 VoxelBrew's native geometry engine. Java excerpts below omit imports and package
 declarations for clarity.
 
@@ -104,7 +104,7 @@ public final class PlateImportDialog implements ImportDialog<PlateSettings> {
     }
 
     @Override
-    public ImportDialogLayout layout() {
+    public Layout layout() {
         return new VerticalLayout(sourceInput, scaleInput);
     }
 
