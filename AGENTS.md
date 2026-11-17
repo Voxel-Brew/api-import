@@ -3,8 +3,9 @@
 ## Project Structure & Module Organization
 
 This repository publishes the Java 21 `dev.voxelbrew.api:import` library. Public importer
-contracts live in `src/main/java/dev/voxelbrew/importer/api`; keep implementations, file-system
-access, JavaFX types, generated code, and dependency-injection annotations out of this API.
+contracts live in `src/main/java/dev/voxelbrew/api/importer`; keep implementations, JavaFX
+types, generated code, and dependency-injection annotations out of this API. `FileImportDialog`
+may inspect a source path during validation; actual bounded reading belongs to an importer.
 Version metadata is in `src/main/resources`. Unit tests use the intentionally configured
 `src/test/test/java` tree; future integration and end-to-end suites belong under
 `src/test/integrationTest/java` and `src/test/e2eTest/java`. Gradle convention scripts are in
@@ -29,8 +30,9 @@ with `./gradlew check --include-build ../dependencies/bom --include-build ../dep
 Spotless applies Palantir Java Format and ktfmt; do not hand-align code against those formatters.
 Java compilation treats all lint warnings as errors. Use `UpperCamelCase` for types,
 `lowerCamelCase` for methods and fields, and descriptive contract names such as
-`ImporterDescriptor`. Preserve the asynchronous `Importer<R>.importFrom(ImportWindow)` contract
-and keep dependencies limited to the model API and BOM.
+`ImporterDescriptor`. Preserve the synchronous `Importer.importFrom(ImportWindow)` contract,
+returning `Optional<CadDocument>` and allowing checked failures. Keep dependencies limited to
+the model API and BOM; do not depend on the export API.
 
 ## Testing Guidelines
 
@@ -63,4 +65,4 @@ Use Lombok where it removes routine Java boilerplate without obscuring a public 
 
 ## AssertJ in Java tests
 
-Use AssertJ (org.assertj:assertj-core) for assertions in Java unit, integration, and end-to-end tests. Keep JUnit Jupiter for test lifecycle, parameterization, and execution. Declare AssertJ without a version in test dependencies; the BOM manages its version. Prefer ssertThat, ssertThatThrownBy, and ssertThatCode with descriptive failure messages and appropriate numeric tolerances. Do not add new JUnit Assertions calls.
+Use AssertJ (`org.assertj:assertj-core`) for assertions in Java unit, integration, and end-to-end tests. Keep JUnit Jupiter for test lifecycle, parameterization, and execution. Declare AssertJ without a version in test dependencies; the BOM manages its version. Prefer `assertThat`, `assertThatThrownBy`, and `assertThatCode` with descriptive failure messages and appropriate numeric tolerances. Do not add new JUnit Assertions calls.
