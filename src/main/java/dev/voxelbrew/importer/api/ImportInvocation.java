@@ -7,9 +7,8 @@ import java.util.Objects;
 import java.util.concurrent.*;
 
 /** Provider invocation and result validation shared by desktop and headless hosts. */
-public final class ImportInvocation {
-
-    private ImportInvocation() {}
+@lombok.experimental.UtilityClass
+public class ImportInvocation {
 
     public static CompletableFuture<ImportResult> importFrom(
             ImporterCatalog.Entry entry, Executor worker, ImportWindow parent) {

@@ -2,9 +2,9 @@ package dev.voxelbrew.importer.api;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
+import lombok.NonNull;
 
 /**
  * Per-host registry that dispatches typed import requests to synchronous handlers.
@@ -36,9 +36,7 @@ public final class ImportDialogs implements ImportWindow {
      * @throws IllegalArgumentException if a handler is already registered for this class
      */
     public <R, D extends ImportDialog<R>> ImportDialogs register(
-            Class<D> type, Function<? super D, Optional<R>> handler) {
-        Objects.requireNonNull(type, "type");
-        Objects.requireNonNull(handler, "handler");
+            @NonNull Class<D> type, @NonNull Function<? super D, Optional<R>> handler) {
         if (handlers.putIfAbsent(type, request -> handler.apply(type.cast(request))) != null)
             throw new IllegalArgumentException("Dialog handler already registered: " + type.getName());
         return this;
@@ -59,8 +57,7 @@ public final class ImportDialogs implements ImportWindow {
      */
     @Override
     @SuppressWarnings("unchecked") // register binds each request class to its declared result type.
-    public <R> Optional<R> show(ImportDialog<R> dialog) {
-        Objects.requireNonNull(dialog, "dialog");
+    public <R> Optional<R> show(@NonNull ImportDialog<R> dialog) {
         return dialog.collectSettings(() -> {
             var handler = handlers.get(dialog.getClass());
             if (handler == null)
