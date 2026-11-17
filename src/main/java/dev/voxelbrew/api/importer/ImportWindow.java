@@ -1,4 +1,4 @@
-package dev.voxelbrew.importer.api;
+package dev.voxelbrew.api.importer;
 
 import java.util.Optional;
 
@@ -8,24 +8,21 @@ import java.util.Optional;
  * <p>A desktop implementation can retain its actual owner window internally; a CLI implementation
  * can resolve settings from parsed arguments or prompts. Neither requires frontend types in the
  * importer contract. Implementations decide which request types they support and must document any
- * thread restrictions. This interface does not assume a local file source.
+ * thread restrictions. This interface does not assume a file destination.
  *
- * @see ImportDialogs
  */
 public interface ImportWindow {
     /**
      * Resolves an importer-defined request synchronously, returning only after confirmation or
      * cancellation.
      *
-     * <p>Hosts must invoke {@link ImportDialog#collectSettings(java.util.function.Supplier)} around
-     * the whole interaction so that {@link ImportDialog#getSettings()} exposes only newly confirmed
-     * settings. Return an empty optional for cancellation, not for an unsupported request or invalid
+     * <p>Return an empty optional for cancellation, not for an unsupported request or invalid
      * settings. Unsupported requests must fail explicitly; validation failures must be corrected or
-     * reported to the caller. {@link ImportDialogs} provides the lifecycle and request dispatch.
+     * reported to the caller.
      *
      * @param <R> accepted settings type
      * @param dialog request to resolve; must not be {@code null}
-     * @return accepted settings, also recorded on the dialog, or empty on cancellation
+     * @return accepted settings, or empty on cancellation
      * @throws UnsupportedOperationException if this host cannot handle the dialog type
      */
     <R> Optional<R> show(ImportDialog<R> dialog);
