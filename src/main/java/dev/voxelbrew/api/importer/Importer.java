@@ -1,6 +1,6 @@
 package dev.voxelbrew.api.importer;
 
-import dev.voxelbrew.engine.model.CadDocument;
+import dev.voxelbrew.api.model.CadDocument;
 import java.util.Optional;
 
 /** Imports a detached editable document using importer-owned interaction and input reading. */
