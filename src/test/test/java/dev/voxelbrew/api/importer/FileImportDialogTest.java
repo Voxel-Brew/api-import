@@ -2,8 +2,8 @@ package dev.voxelbrew.api.importer;
 
 import static org.assertj.core.api.Assertions.*;
 
-import dev.voxelbrew.api.importer.component.FileSource;
-import dev.voxelbrew.api.importer.component.VerticalLayout;
+import dev.voxelbrew.api.vui.FileSource;
+import dev.voxelbrew.api.vui.VerticalLayout;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;

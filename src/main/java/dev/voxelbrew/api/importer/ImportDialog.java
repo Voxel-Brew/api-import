@@ -1,6 +1,6 @@
 package dev.voxelbrew.api.importer;
 
-import dev.voxelbrew.api.importer.component.ImportDialogLayout;
+import dev.voxelbrew.api.vui.Layout;
 import java.util.Map;
 
 /** Frontend-neutral description of an importer interaction. */
@@ -9,11 +9,11 @@ public interface ImportDialog<R> {
     String title();
 
     /** Controls and their arrangement, interpreted by the frontend. */
-    ImportDialogLayout layout();
+    Layout layout();
 
     /**
      * Checks the supplied values, which may be incomplete while a host gathers input. Returns all
-     * expected errors keyed by {@link dev.voxelbrew.api.importer.component.ImportDialogInput#id()},
+     * expected errors keyed by {@link dev.voxelbrew.api.vui.Input#id()},
      * or an empty map when valid. Each message should explain how to correct the value.
      */
     Map<String, String> validate(Map<String, String> values);
