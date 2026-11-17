@@ -1,6 +1,6 @@
 package dev.voxelbrew.importer.api;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,6 +8,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("deprecation")
 class ImportDialogsTest {
     @lombok.Getter
     @lombok.experimental.Accessors(fluent = true)
@@ -28,7 +29,7 @@ class ImportDialogsTest {
     @Test
     void providerDefinedCloudInteractionAndResultNeedNoLocalFile() throws Exception {
         var cli = new ImportDialogs().register(CloudDialog.class, request -> {
-            assertEquals(List.of("team", "personal"), request.projects());
+            assertThat(request.projects()).isEqualTo(List.of("team", "personal"));
             return Optional.of(new CloudSettings("team", true));
         });
         // A provider can collect its own settings and return its own receipt type.
@@ -39,47 +40,45 @@ class ImportDialogsTest {
                             value -> CompletableFuture.completedFuture(new CloudReceipt("remote-id", value.project())))
                     .orElseGet(() -> CompletableFuture.failedFuture(new CancellationException()));
         };
-        assertEquals(
-                new CloudReceipt("remote-id", "team"), importer.importFrom(cli).get());
+        assertThat(importer.importFrom(cli).get()).isEqualTo(new CloudReceipt("remote-id", "team"));
         var cancelled = new ImportDialogs().register(CloudDialog.class, request -> Optional.empty());
-        assertThrows(
-                CancellationException.class,
-                () -> importer.importFrom(cancelled).join());
+        assertThatThrownBy(() -> importer.importFrom(cancelled).join()).isInstanceOf(CancellationException.class);
     }
 
     @Test
     void unsupportedDialogsAndDuplicateHandlersFailExplicitly() {
         var host = new ImportDialogs();
         var dialog = new CloudDialog("Publish", List.of("team"));
-        assertThrows(UnsupportedOperationException.class, () -> host.show(dialog));
+        assertThatThrownBy(() -> host.show(dialog)).isInstanceOf(UnsupportedOperationException.class);
         host.register(CloudDialog.class, request -> Optional.empty());
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> host.register(CloudDialog.class, request -> Optional.of(new CloudSettings("team", false))));
-        assertTrue(host.show(dialog).isEmpty());
+        assertThatThrownBy(() ->
+                        host.register(CloudDialog.class, request -> Optional.of(new CloudSettings("team", false))))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThat(host.show(dialog).isEmpty()).isTrue();
     }
 
     @Test
     void settingsAreAvailableOnlyAfterConfirmationAndReplacedOnReuse() {
         var dialog = new CloudDialog("Publish", List.of("team", "personal"));
-        assertThrows(IllegalStateException.class, dialog::getSettings);
+        assertThatThrownBy(dialog::getSettings).isInstanceOf(IllegalStateException.class);
         var first = new CloudSettings("team", true);
         var second = new CloudSettings("personal", false);
         var host = new ImportDialogs().register(CloudDialog.class, request -> {
-            assertThrows(IllegalStateException.class, request::getSettings);
+            assertThatThrownBy(request::getSettings).isInstanceOf(IllegalStateException.class);
             return Optional.of(first);
         });
-        assertEquals(Optional.of(first), host.show(dialog));
-        assertSame(first, dialog.getSettings());
+        assertThat(host.show(dialog)).isEqualTo(Optional.of(first));
+        assertThat(dialog.getSettings()).isSameAs(first);
         new ImportDialogs()
                 .register(CloudDialog.class, request -> Optional.of(second))
                 .show(dialog);
-        assertSame(second, dialog.getSettings());
-        assertTrue(new ImportDialogs()
-                .register(CloudDialog.class, request -> Optional.empty())
-                .show(dialog)
-                .isEmpty());
-        assertThrows(IllegalStateException.class, dialog::getSettings);
+        assertThat(dialog.getSettings()).isSameAs(second);
+        assertThat(new ImportDialogs()
+                        .register(CloudDialog.class, request -> Optional.empty())
+                        .show(dialog)
+                        .isEmpty())
+                .isTrue();
+        assertThatThrownBy(dialog::getSettings).isInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -92,17 +91,18 @@ class ImportDialogsTest {
             throw failure;
         });
         success.show(dialog);
-        assertSame(failure, assertThrows(IllegalArgumentException.class, () -> failing.show(dialog)));
-        assertThrows(IllegalStateException.class, dialog::getSettings);
+        assertThat(org.assertj.core.api.Assertions.catchThrowableOfType(
+                        () -> failing.show(dialog), IllegalArgumentException.class))
+                .isSameAs(failure);
+        assertThatThrownBy(dialog::getSettings).isInstanceOf(IllegalStateException.class);
         success.show(dialog);
-        assertThrows(UnsupportedOperationException.class, () -> new ImportDialogs().show(dialog));
-        assertThrows(IllegalStateException.class, dialog::getSettings);
+        assertThatThrownBy(() -> new ImportDialogs().show(dialog)).isInstanceOf(UnsupportedOperationException.class);
+        assertThatThrownBy(dialog::getSettings).isInstanceOf(IllegalStateException.class);
         success.show(dialog);
-        assertThrows(
-                NullPointerException.class,
-                () -> new ImportDialogs()
+        assertThatThrownBy(() -> new ImportDialogs()
                         .register(CloudDialog.class, request -> null)
-                        .show(dialog));
-        assertThrows(IllegalStateException.class, dialog::getSettings);
+                        .show(dialog))
+                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(dialog::getSettings).isInstanceOf(IllegalStateException.class);
     }
 }
