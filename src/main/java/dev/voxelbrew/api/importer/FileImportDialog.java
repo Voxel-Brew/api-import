@@ -1,8 +1,8 @@
 package dev.voxelbrew.api.importer;
 
-import dev.voxelbrew.api.vui.FileSource;
-import dev.voxelbrew.api.vui.Layout;
-import dev.voxelbrew.api.vui.VerticalLayout;
+import dev.voxelbrew.api.model.vui.FileSource;
+import dev.voxelbrew.api.model.vui.Layout;
+import dev.voxelbrew.api.model.vui.VerticalLayout;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
