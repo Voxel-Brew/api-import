@@ -9,7 +9,7 @@ may inspect a source path during validation; actual bounded reading belongs to a
 Version metadata is in `src/main/resources`. Unit tests use the intentionally configured
 `src/test/test/java` tree; future integration and end-to-end suites belong under
 `src/test/integrationTest/java` and `src/test/e2eTest/java`. Gradle convention scripts are in
-`gradle/`, quality configuration is in `config/quality/`, and release automation is in `.github/`.
+`gradle/`, SpotBugs configuration comes from the BOM checkout, and release automation is in `.github/`.
 
 ## Build, Test, and Development Commands
 
@@ -39,6 +39,12 @@ the model API and BOM; do not depend on the export API.
 Tests use JUnit Jupiter. Name test classes `*Test` and test methods after observable behavior, as
 in `malformedDescriptorsAndOptionsFailBeforeReading`. Add contract tests for validation,
 immutability, null handling, and compatibility whenever public records or interfaces change.
+
+## Pre-commit SpotBugs
+
+Before committing, run `./gradlew spotbugsMain` from this API repository or
+`./gradlew :import:spotbugsMain` from the composite workspace.
+Use `.\gradlew.bat` in place of `./gradlew` on Windows.
 
 ## Commit & Pull Request Guidelines
 
