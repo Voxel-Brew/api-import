@@ -54,9 +54,3 @@ instructions for plugins built against the old Import API.
 ## License
 
 The Import API is licensed under the [MIT License](LICENSE).
-
-## SpotBugs
-
-For a standalone checkout, set `VOXELBREW_BOM_DIR` to a VoxelBrew BOM checkout that
-contains `spotbugs-conventions`. The workspace and CI supply the convention automatically.
-Run `./gradlew spotbugsMain` directly or as part of `./gradlew check`.
