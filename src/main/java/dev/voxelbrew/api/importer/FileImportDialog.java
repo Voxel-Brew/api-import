@@ -22,6 +22,9 @@ public final class FileImportDialog implements ImportDialog<FileImportDialog.Sou
     @Getter
     private final FileSource sourceInput;
 
+    /** Accepted path, retained exactly as supplied. */
+    public record Source(@NonNull Path path) {}
+
     public FileImportDialog(@NonNull String title, String extension) {
         this.title = title;
         if (extension == null || !extension.matches("[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*"))
@@ -56,7 +59,4 @@ public final class FileImportDialog implements ImportDialog<FileImportDialog.Sou
         if (!errors.isEmpty()) throw new IllegalArgumentException(String.join("; ", errors.values()));
         return new Source(Path.of(values.get(sourceInput.id())));
     }
-
-    /** Accepted path, retained exactly as supplied. */
-    public record Source(@NonNull Path path) {}
 }
