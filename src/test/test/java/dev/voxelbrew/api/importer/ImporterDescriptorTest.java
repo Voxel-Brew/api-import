@@ -17,9 +17,10 @@ class ImporterDescriptorTest {
 
     @Test
     void rejectsInvalidDiscoveryMetadataWithoutChangingValidValues() {
-        for (String id : java.util.List.of("", "Bad", "has space", "_hidden"))
+        for (String id : java.util.List.of("", "Bad", "has space", "_hidden")) {
             assertThatThrownBy(() -> new ImporterDescriptor(id, "Example", "1.0"))
                     .isInstanceOf(IllegalArgumentException.class);
+        }
         assertThatThrownBy(() -> new ImporterDescriptor("example", " ", "1.0"))
                 .isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> new ImporterDescriptor("example", null, "1.0"))
