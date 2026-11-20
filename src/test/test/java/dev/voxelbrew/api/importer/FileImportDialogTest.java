@@ -16,7 +16,16 @@ class FileImportDialogTest {
     Path directory;
 
     @Test
-    void localizesValidationWithoutChangingExceptionMessages() {
+    void returnsTheKeyWhenTheHostHasNoTranslation() {
+        var dialog = new FileImportDialog("Test", "vxb", new TestTranslationService(Map.of()));
+        assertThat(dialog.validate(Map.of())).containsEntry("source", "api.import.source.choose");
+        assertThatThrownBy(() -> dialog.buildSettings(Map.of()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("api.import.source.choose");
+    }
+
+    @Test
+    void localizesValidationAndExceptionMessages() {
         Locale previous = Locale.getDefault(Locale.Category.DISPLAY);
         try {
             Locale.setDefault(Locale.Category.DISPLAY, Locale.forLanguageTag("pl"));
@@ -24,7 +33,7 @@ class FileImportDialogTest {
             assertThat(dialog.validate(Map.of())).containsEntry("source", "Wybierz plik źródłowy");
             assertThatThrownBy(() -> dialog.buildSettings(Map.of()))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("Choose a source");
+                    .hasMessage("Wybierz plik źródłowy");
         } finally {
             Locale.setDefault(Locale.Category.DISPLAY, previous);
         }
