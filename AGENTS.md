@@ -34,6 +34,11 @@ Java compilation treats all lint warnings as errors. Use `UpperCamelCase` for ty
 returning `Optional<CadDocument>` and allowing checked failures. Keep dependencies limited to
 the model API and BOM; do not depend on the export API.
 
+Run `./gradlew checkJavaMemberOrder` to check Java source declaration order. The `check` and
+`build` tasks include it. Within each class, start with static final fields, then other static fields,
+final instance fields, other instance fields, static nested types, inner classes, static methods,
+constructors, and instance methods. Preserve Java initialization order when moving fields.
+
 ## Testing Guidelines
 
 Tests use JUnit Jupiter. Name test classes `*Test` and test methods after observable behavior, as

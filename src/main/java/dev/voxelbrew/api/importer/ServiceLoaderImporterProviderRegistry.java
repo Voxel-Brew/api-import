@@ -12,9 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 /** Discovers classpath and installed importers and owns their plugin class loaders. */
 @Slf4j
 public final class ServiceLoaderImporterProviderRegistry implements ImporterProviderRegistry {
-    private record Jar(Path path, long size, FileTime modified) {}
-
     private final ClassLoader parent;
+
     private final List<ImporterProvider> supplied;
     private final List<ImporterProvider> classpath = new ArrayList<>();
     private final Map<String, ImporterProvider> entries = new LinkedHashMap<>();
@@ -22,6 +21,8 @@ public final class ServiceLoaderImporterProviderRegistry implements ImporterProv
     private List<Jar> loadedJars;
     private Path directory;
     private boolean closed;
+
+    private record Jar(Path path, long size, FileTime modified) {}
 
     public ServiceLoaderImporterProviderRegistry() {
         this(ServiceLoaderImporterProviderRegistry.class.getClassLoader(), List.of());
