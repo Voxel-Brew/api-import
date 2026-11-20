@@ -6,6 +6,7 @@ import dev.voxelbrew.api.model.vui.FileSource;
 import dev.voxelbrew.api.model.vui.VerticalLayout;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -13,6 +14,21 @@ import org.junit.jupiter.api.io.TempDir;
 class FileImportDialogTest {
     @TempDir
     Path directory;
+
+    @Test
+    void localizesValidationWithoutChangingExceptionMessages() {
+        Locale previous = Locale.getDefault(Locale.Category.DISPLAY);
+        try {
+            Locale.setDefault(Locale.Category.DISPLAY, Locale.forLanguageTag("pl"));
+            var dialog = new FileImportDialog("Open", "vxb");
+            assertThat(dialog.validate(Map.of())).containsEntry("source", "Wybierz plik źródłowy");
+            assertThatThrownBy(() -> dialog.buildSettings(Map.of()))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("Choose a source");
+        } finally {
+            Locale.setDefault(Locale.Category.DISPLAY, previous);
+        }
+    }
 
     @Test
     void describesAFileSourceAndPreservesTheAcceptedPath() throws Exception {
