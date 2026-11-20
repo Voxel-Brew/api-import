@@ -7,19 +7,17 @@ import dev.voxelbrew.api.model.vui.VerticalLayout;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.text.MessageFormat;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.ServiceLoader;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 /** Standard interaction for choosing one local source file. */
+@Slf4j
 @lombok.experimental.Accessors(fluent = true)
 public final class FileImportDialog implements ImportDialog<FileImportDialog.Source> {
-    private final Optional<TranslationService> translations;
+    private final TranslationService translations;
 
     @Getter
     private final String title;
@@ -38,15 +36,15 @@ public final class FileImportDialog implements ImportDialog<FileImportDialog.Sou
                 title,
                 extension,
                 ServiceLoader.load(TranslationService.class, TranslationService.class.getClassLoader())
-                        .findFirst());
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalStateException("A TranslationService provider is required")));
     }
 
     /** Creates a file request using the host's translation service. */
-    public FileImportDialog(@NonNull String title, String extension, TranslationService translations) {
-        this(title, extension, Optional.of(translations));
-    }
-
-    private FileImportDialog(@NonNull String title, String extension, Optional<TranslationService> translations) {
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
+            value = "EI_EXPOSE_REP2",
+            justification = "The dialog shares the host service to observe its current translations.")
+    public FileImportDialog(@NonNull String title, String extension, @NonNull TranslationService translations) {
         this.translations = translations;
         this.title = title;
         if (extension == null || !extension.matches("[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*"))
@@ -55,16 +53,11 @@ public final class FileImportDialog implements ImportDialog<FileImportDialog.Sou
         sourceInput = new FileSource("source", extension);
     }
 
-    private String message(boolean localize, String key, Object... arguments) {
-        if (localize) {
-            var translated = translations.flatMap(service -> service.translate(key, arguments));
-            if (translated.isPresent()) return translated.get();
-        }
-        var display = Locale.getDefault(Locale.Category.DISPLAY);
-        var locale = localize && display.getLanguage().equals("pl") ? Locale.forLanguageTag("pl") : Locale.ENGLISH;
-        String pattern = ResourceBundle.getBundle("dev.voxelbrew.api.importer.messages", locale)
-                .getString(key);
-        return arguments.length == 0 ? pattern : new MessageFormat(pattern, locale).format(arguments);
+    private String message(String key, Object... arguments) {
+        return translations.translate(key, arguments).orElseGet(() -> {
+            log.warn("Missing translation for key {}", key);
+            return key;
+        });
     }
 
     @Override
@@ -74,29 +67,23 @@ public final class FileImportDialog implements ImportDialog<FileImportDialog.Sou
 
     @Override
     public Map<String, String> validate(Map<String, String> values) {
-        return validate(values, true);
-    }
-
-    private Map<String, String> validate(Map<String, String> values, boolean localize) {
         var supplied = values.get(sourceInput.id());
         if (supplied == null || supplied.isBlank())
-            return Map.of(sourceInput.id(), message(localize, "api.import.source.choose"));
+            return Map.of(sourceInput.id(), message("api.import.source.choose"));
         try {
             var path = Path.of(supplied);
-            if (!Files.exists(path)) return Map.of(sourceInput.id(), message(localize, "api.import.source.missing"));
-            if (!Files.isRegularFile(path))
-                return Map.of(sourceInput.id(), message(localize, "api.import.source.file"));
-            if (!Files.isReadable(path))
-                return Map.of(sourceInput.id(), message(localize, "api.import.source.readable"));
+            if (!Files.exists(path)) return Map.of(sourceInput.id(), message("api.import.source.missing"));
+            if (!Files.isRegularFile(path)) return Map.of(sourceInput.id(), message("api.import.source.file"));
+            if (!Files.isReadable(path)) return Map.of(sourceInput.id(), message("api.import.source.readable"));
         } catch (InvalidPathException failure) {
-            return Map.of(sourceInput.id(), message(localize, "api.import.source.invalid", failure.getReason()));
+            return Map.of(sourceInput.id(), message("api.import.source.invalid", failure.getReason()));
         }
         return Map.of();
     }
 
     @Override
     public Source buildSettings(Map<String, String> values) {
-        var errors = validate(values, false);
+        var errors = validate(values);
         if (!errors.isEmpty()) throw new IllegalArgumentException(String.join("; ", errors.values()));
         return new Source(Path.of(values.get(sourceInput.id())));
     }

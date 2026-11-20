@@ -27,6 +27,7 @@ tasks.withType<JavaCompile>().configureEach {
 apply(from = "gradle/lombok.gradle.kts")
 
 dependencies {
+    compileOnlyApi("com.github.spotbugs:spotbugs-annotations:4.10.5")
     api(platform("dev.voxelbrew:bom:${providers.gradleProperty("bomVersion").get()}"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.assertj:assertj-core")
