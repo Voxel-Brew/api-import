@@ -140,8 +140,9 @@ public final class ServiceLoaderImporterProviderRegistry implements ImporterProv
 
     private void register(ImporterProvider provider) {
         var descriptor = Objects.requireNonNull(provider.descriptor(), "descriptor");
-        if (entries.putIfAbsent(descriptor.id(), provider) != null)
+        if (entries.putIfAbsent(descriptor.id(), provider) != null) {
             log.warn("Duplicate importer ID: {}", descriptor.id());
+        }
     }
 
     @Override
@@ -155,8 +156,9 @@ public final class ServiceLoaderImporterProviderRegistry implements ImporterProv
     @Override
     public synchronized ImporterProvider require(String id) {
         var provider = entries.get(id);
-        if (provider == null)
+        if (provider == null) {
             throw new IllegalArgumentException("Unknown importer '" + id + "'. Available: " + entries.keySet());
+        }
         return provider;
     }
 
@@ -170,7 +172,9 @@ public final class ServiceLoaderImporterProviderRegistry implements ImporterProv
                 loader.close();
             } catch (IOException error) {
                 if (failure == null) failure = error;
-                else failure.addSuppressed(error);
+                else {
+                    failure.addSuppressed(error);
+                }
             }
         }
         if (failure != null) throw failure;

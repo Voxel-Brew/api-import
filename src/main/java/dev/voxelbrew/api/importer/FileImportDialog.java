@@ -47,8 +47,9 @@ public final class FileImportDialog implements ImportDialog<FileImportDialog.Sou
     public FileImportDialog(@NonNull String title, String extension, @NonNull TranslationService translations) {
         this.translations = translations;
         this.title = title;
-        if (extension == null || !extension.matches("[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*"))
+        if (extension == null || !extension.matches("[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*")) {
             throw new IllegalArgumentException("Invalid extension");
+        }
         this.extension = extension;
         sourceInput = new FileSource("source", extension);
     }
@@ -68,8 +69,9 @@ public final class FileImportDialog implements ImportDialog<FileImportDialog.Sou
     @Override
     public Map<String, String> validate(Map<String, String> values) {
         var supplied = values.get(sourceInput.id());
-        if (supplied == null || supplied.isBlank())
+        if (supplied == null || supplied.isBlank()) {
             return Map.of(sourceInput.id(), message("api.import.source.choose"));
+        }
         try {
             var path = Path.of(supplied);
             if (!Files.exists(path)) return Map.of(sourceInput.id(), message("api.import.source.missing"));
