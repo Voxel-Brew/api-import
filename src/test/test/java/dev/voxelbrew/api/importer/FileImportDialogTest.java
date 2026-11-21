@@ -16,12 +16,13 @@ class FileImportDialogTest {
     Path directory;
 
     @Test
-    void returnsTheKeyWhenTheHostHasNoTranslation() {
+    void returnsDiagnosticTextWhenTheHostHasNoTranslation() {
         var dialog = new FileImportDialog("Test", "vxb", new TestTranslationService(Map.of()));
-        assertThat(dialog.validate(Map.of())).containsEntry("source", "api.import.source.choose");
+        String expected = Locale.getDefault(Locale.Category.DISPLAY) + ":api.import.source.choose[]";
+        assertThat(dialog.validate(Map.of())).containsEntry("source", expected);
         assertThatThrownBy(() -> dialog.buildSettings(Map.of()))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("api.import.source.choose");
+                .hasMessage(expected);
     }
 
     @Test
