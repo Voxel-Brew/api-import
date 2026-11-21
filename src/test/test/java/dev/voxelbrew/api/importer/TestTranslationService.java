@@ -40,7 +40,7 @@ public final class TestTranslationService implements TranslationService {
     }
 
     @Override
-    public Optional<String> translate(String key, Object... arguments) {
+    public Optional<String> tryTranslate(String key, Object... arguments) {
         var locale = Locale.forLanguageTag(currentLocale().getLanguage());
         var catalog = catalogs.getOrDefault(locale, catalogs.getOrDefault(Locale.ENGLISH, Map.of()));
         return Optional.ofNullable(catalog.get(key))

@@ -11,10 +11,8 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 
 /** Standard interaction for choosing one local source file. */
-@Slf4j
 @lombok.experimental.Accessors(fluent = true)
 public final class FileImportDialog implements ImportDialog<FileImportDialog.Source> {
     private final TranslationService translations;
@@ -55,10 +53,7 @@ public final class FileImportDialog implements ImportDialog<FileImportDialog.Sou
     }
 
     private String message(String key, Object... arguments) {
-        return translations.translate(key, arguments).orElseGet(() -> {
-            log.warn("Missing translation for key {}", key);
-            return key;
-        });
+        return translations.translate(key, arguments);
     }
 
     @Override
