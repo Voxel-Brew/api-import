@@ -9,7 +9,7 @@ may inspect a source path during validation; actual bounded reading belongs to a
 Version metadata is in `src/main/resources`. Unit tests use the intentionally configured
 `src/test/test/java` tree; future integration and end-to-end suites belong under
 `src/test/integrationTest/java` and `src/test/e2eTest/java`. Gradle convention scripts are in
-`gradle/`, SpotBugs configuration comes from the BOM checkout, and release automation is in `.github/`.
+`gradle/`, SpotBugs configuration comes from the public BOM master branch, and release automation is in `.github/`.
 
 ## Build, Test, and Development Commands
 
@@ -22,8 +22,7 @@ Use the committed wrapper rather than a system Gradle installation:
 - `./gradlew spotlessApply` formats Java, Kotlin Gradle scripts, Markdown, YAML, and properties.
 - `./gradlew build` compiles and packages the library, sources, and Javadocs.
 
-CI uses Temurin 21 and Node 24. When snapshot dependencies are unavailable remotely, mirror CI
-with `./gradlew check --include-build ../dependencies/bom --include-build ../dependencies/model`.
+CI uses Temurin 21 and Node 24. Publish local snapshots to Maven Local and opt in with `-PuseMavenLocal=true`.
 
 ## Coding Style & Naming Conventions
 
@@ -47,8 +46,8 @@ immutability, null handling, and compatibility whenever public records or interf
 
 ## Pre-commit SpotBugs
 
-For a standalone checkout, set `VOXELBREW_BOM_DIR` to a VoxelBrew BOM checkout that
-contains `spotbugs-conventions`. The composite workspace and CI supply it automatically.
+The build resolves VoxelBrew artifacts through Maven and fetches shared quality policy
+from the public BOM master branch.
 
 Before committing, run `./gradlew spotbugsMain` from this API repository or
 `./gradlew :import:spotbugsMain` from the composite workspace.
