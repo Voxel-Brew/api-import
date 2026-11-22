@@ -24,6 +24,10 @@ Use the committed wrapper rather than a system Gradle installation:
 
 CI uses Temurin 21 and Node 24. Publish local snapshots to Maven Local and opt in with `-PuseMavenLocal=true`.
 
+Run `./gradlew checkBinaryCompatibility` to compare the built JAR with the latest stable Maven
+Central release in the same major at or below `projectVersion` (ignoring `-SNAPSHOT`). The
+`check` task includes this comparison on pull requests and pushes to master and release branches.
+
 ## Coding Style & Naming Conventions
 
 Spotless applies Palantir Java Format and ktfmt; do not hand-align code against those formatters.
