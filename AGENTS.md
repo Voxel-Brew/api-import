@@ -68,6 +68,9 @@ and compatibility impact, link the relevant issue, and report the commands run. 
 only useful for documentation or workflow UI changes. Ensure `./gradlew check` passes before
 requesting review; never commit credentials, generated build output, or signing keys.
 
+When a commit addresses a known GitHub issue, include the issue number in the
+commit subject as the scope, for example `feat(#1337): foo boo bar baz`.
+
 When a pull request resolves a known GitHub issue, add `Closes #123` to the PR description,
 using the actual issue number. For an issue in another repository, use
 `Closes owner/repository#123`. Add the closing reference to the PR targeting
